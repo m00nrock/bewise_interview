@@ -6,11 +6,22 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=database
     ports:
       - '5432:5432'
     volumes: 
       - db:/var/lib/postgresql/data
+
+  web:
+    build: ../backend
+    restart: on-failure
+    volumes:
+      - ../backend:/backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    command: gunicorn wsgi:app --bind 0.0.0.0:5000
+
 volumes:
   db:
     driver: local

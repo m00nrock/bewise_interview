@@ -19,7 +19,10 @@ logger.addHandler(handler)
 MAIN_ENDPOINT = 'https://jservice.io/api/random'
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432'
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    'postgresql://postgres:postgres@db:5432'
+    )
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
@@ -47,16 +50,16 @@ class Question(db.Model):
 db.create_all()
 
 
-@app.route('/', methods=['POST'])
-def index():
-    def get_question_from_api(count: int) -> list:
+@app.route('/questions/', methods=['POST'])
+def questions():
+    def get_question_from_api(count: int) -> dict:
         return requests.get(MAIN_ENDPOINT, params=dict(count=count)).json()
 
     def is_record_exists(question: dict) -> dict:
         if question['id'] in list_of_ids:
             logging.error(
                 f'Id {question["id"]} уже есть в БД.Запрашиваем новый'
-                )
+            )
             question = get_question_from_api(1)
             return is_record_exists(question[0])
         logging.info('Дублей нет')
