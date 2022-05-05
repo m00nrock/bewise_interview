@@ -16,6 +16,7 @@ logger.setLevel(logging.INFO)
 handler = logging.StreamHandler(sys.stdout)
 logger.addHandler(handler)
 
+
 MAIN_ENDPOINT = 'https://jservice.io/api/random'
 
 app = Flask(__name__)
