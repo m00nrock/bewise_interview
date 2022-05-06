@@ -32,16 +32,16 @@ class Question(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text_question = db.Column(db.String())
     text_answer = db.Column(db.String())
-    date = db.Column(db.String(100))
-    added_at = db.Column(db.DateTime())
+    created_at = db.Column(db.String(100))
+    added_to_db_at = db.Column(db.DateTime())
 
     def serialize(self):
         return {
             'id': self.id,
             'text_question': self.text_question,
             'text_answer': self.text_answer,
-            'date': self.date,
-            'added_at': self.added_at
+            'created_at': self.created_at,
+            'added_to_db_at': self.added_to_db_at
         }
 
     def __repr__(self):
@@ -67,7 +67,10 @@ def questions():
         return question
 
     if 'questions_num' in request.json:
-        count = request.json['questions_num']
+        try:
+            count = int(request.json['questions_num'])
+        except ValueError:
+            return 'Значение questions_num невозможно привести к int'
         list_of_ids = [question.id for question in Question.query.all()]
         response = get_question_from_api(count)
 
@@ -78,12 +81,12 @@ def questions():
                     id=not_exist_records['id'],
                     text_question=not_exist_records['question'],
                     text_answer=not_exist_records['answer'],
-                    date=not_exist_records['created_at'],
-                    added_at=dt.datetime.utcnow()
+                    created_at=not_exist_records['created_at'],
+                    added_to_db_at=dt.datetime.utcnow()
                 )
             )
         db.session.commit()
-        last_record = Question.query.order_by(desc('added_at')).first()
+        last_record = Question.query.order_by(desc('added_to_db_at')).first()
         if last_record is None:
             return {}
         return last_record.serialize()
