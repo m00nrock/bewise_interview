@@ -25,6 +25,37 @@
     ```
     ###### проект запустится по адресу localhost:5000
 
+### Подключение к бд
+
+Для подключения к БД можно использовать утилиту [pgAdmin](https://www.pgadmin.org/download/)
+
+Или подключиться в контейнере используя интерфейс psql:
+
+Из папки infra/
+
+    ```
+    docker-compose exec db bash
+    ```
+    
+    ```
+    psql -h localhost -U postgres
+    ```
+
+Ожидаемый вывод:
+
+    ```
+    psql (14.1)
+    Type "help" for help.
+    
+    postgres=#
+    ```
+    
+Получить 10 записей из таблицы используя команду:
+
+    ```
+    SELECT * FROM public.question LIMIT 10;
+    ```
+
 ### Технологии:
 - Python 3.8.9
 - Flask
